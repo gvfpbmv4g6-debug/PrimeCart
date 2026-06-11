@@ -41,18 +41,54 @@ def register_view(request):
         elif LoginUser.objects.filter(user_id=user_id).exists():
             error_message = "このユーザーIDは既に使われています。"
         else:
-            LoginUser.objects.create(
-                user_id=user_id,
-                password=make_password(password),
-                name=name,
-                address=address
-            )
-            return redirect("login")
+            request.session["register_data"] = {
+                "user_id": user_id,
+                "password": make_password(password),
+                "name": name,
+                "address": address,
+            }
+            return redirect("registerUserConfirm")
 
     return render(request, "login/register.html", {
         "error_message": error_message
     })
 
 
+def register_confirm_view(request):
+    register_data = request.session.get("register_data")
+
+    if register_data is None:
+        return redirect("register")
+
+    if request.method == "POST":
+        if LoginUser.objects.filter(user_id=register_data["user_id"]).exists():
+            return render(request, "login/registerUserConfirm.html", {
+                "register_data": register_data,
+                "error_message": "このユーザーIDは既に使われています。"
+            })
+
+        LoginUser.objects.create(
+            user_id=register_data["user_id"],
+            password=register_data["password"],
+            name=register_data["name"],
+            address=register_data["address"]
+        )
+
+        del request.session["register_data"]
+
+        return redirect("login")
+
+    return render(request, "login/registerUserConfirm.html", {
+        "register_data": register_data
+    })
+
+
 def success_view(request):
-    return render(request, "login/success.html")
+    login_name = request.session.get("login_name")
+
+    if login_name is None:
+        return redirect("login")
+
+    return render(request, "login/success.html", {
+        "login_name": login_name
+    })

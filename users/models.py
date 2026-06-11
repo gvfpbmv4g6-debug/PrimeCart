@@ -2,7 +2,7 @@ from django.db import models
 
 
 class LoginUser(models.Model):
-    db_table = "users"
+    
     user_id = models.CharField(max_length=128, primary_key=True)
     password = models.CharField(max_length=256)
     name = models.CharField(max_length=128)
@@ -11,3 +11,18 @@ class LoginUser(models.Model):
 
     def __str__(self):
         return self.user_id
+    
+    class Meta:
+        db_table = "account_user"
+
+
+class AdministratorAdmin(models.Model):
+    
+    admin_id = models.CharField(max_length=128, primary_key=True)
+    password = models.CharField(max_length=256)
+
+    def __str__(self):
+        return self.user_id
+    
+    class Meta:
+        db_table = "administrator_admin"

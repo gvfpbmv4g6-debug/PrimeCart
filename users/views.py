@@ -19,7 +19,7 @@ def login_view(request):
         else:
             error_message = "ユーザーIDまたはパスワードが違います。"
 
-    return render(request, "login.html", {
+    return render(request, "login/login.html", {
         "error_message": error_message
     })
 
@@ -30,10 +30,15 @@ def register_view(request):
     if request.method == "POST":
         user_id = request.POST.get("user_id")
         password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm_password")
         name = request.POST.get("name")
         address = request.POST.get("address")
 
-        if LoginUser.objects.filter(user_id=user_id).exists():
+        
+        if password != confirm_password:
+            error_message = "パスワードが一致しません。"
+
+        elif LoginUser.objects.filter(user_id=user_id).exists():
             error_message = "このユーザーIDは既に使われています。"
         else:
             LoginUser.objects.create(
@@ -44,6 +49,10 @@ def register_view(request):
             )
             return redirect("login")
 
-    return render(request, "register.html", {
+    return render(request, "login/register.html", {
         "error_message": error_message
     })
+
+
+def success_view(request):
+    return render(request, "login/success.html")

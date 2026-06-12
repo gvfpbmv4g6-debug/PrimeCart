@@ -3,9 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>商品詳細</title>
 </head>
 <body>
     <h1>商品の詳細表示</h1>
+
+    <table border="1">
+        <tr>
+            <th>商品名</th>
+            <td>{{ item.name }}</td>
+        </tr>
+        <tr>
+            <th>商品の色</th>
+            <td>{{ item.color }}</td>
+        </tr>
+        <tr>
+            <th>メーカー名</th>
+            <td>{{ item.manufacturer }}</td>
+        </tr>
+        <tr>
+            <th>価格</th>
+            <td>{{ item.price }}円</td>
+        </tr>
+        <tr>
+            <th>在庫数</th>
+            <td>{{ item.stock }}個</td>
+        </tr>
+    </table>
+
 </body>
 </html>

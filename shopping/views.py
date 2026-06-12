@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.db.models import Q
 
 from .models import ShoppingCategory, ShoppingItem
@@ -41,6 +41,21 @@ def search_result(request):
         "categories": categories,
         "selected_category": category_id,
         "keyword": keyword,
+        "login_user_id": login_user_id,
+        "login_name": login_name,
+    })
+
+def item_detail(request, item_id):
+    login_user_id = request.session.get("login_user_id")
+    login_name = request.session.get("login_name")
+
+    item = ShoppingItem.objects.filter(item_id=item_id).first()
+
+    if item is None:
+        return redirect("shopping:search_result")
+
+    return render(request, "shopping/itemDetail.html", {
+        "item": item,
         "login_user_id": login_user_id,
         "login_name": login_name,
     })

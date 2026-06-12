@@ -12,6 +12,8 @@
         <p>{{ login_name }} さん、ログイン中</p>
 
         <nav>
+            <a href="{% url 'users:userInfo' %}">会員情報を見る</a>
+            |
             <a href="{% url 'users:logout' %}">ログアウト</a> 
         </nav>
     {% else %}

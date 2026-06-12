@@ -93,6 +93,22 @@ def success_view(request):
         "login_name": login_name
     })
 
+def user_info_view(request):
+    login_user_id = request.session.get("login_user_id")
+
+    if login_user_id is None:
+        return redirect("users:login")
+
+    user = LoginUser.objects.filter(user_id=login_user_id).first()
+
+    if user is None:
+        return redirect("users:login")
+
+    return render(request, "login/userInfo.html", {
+        "user": user
+    })
+
+
 def logout_view(request):
     request.session.flush()
     return redirect("shopping:main")

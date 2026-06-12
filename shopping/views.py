@@ -50,6 +50,7 @@ def item_detail(request, item_id):
     login_name = request.session.get("login_name")
 
     item = ShoppingItem.objects.filter(item_id=item_id).first()
+    amount_list = range(1, item.stock + 1)
 
     if item is None:
         return redirect("shopping:search_result")
@@ -58,4 +59,5 @@ def item_detail(request, item_id):
         "item": item,
         "login_user_id": login_user_id,
         "login_name": login_name,
+        "amount_list": amount_list,
     })

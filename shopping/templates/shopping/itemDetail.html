@@ -31,5 +31,25 @@
         </tr>
     </table>
 
+    <br>
+
+    {% if item.stock > 0 %}
+    <form method="post">
+        {% csrf_token %}
+
+        <div>
+            <label for="amount">数量</label>
+            <select name="amount" id="amount">
+                {% for amount in amount_list %}
+                    <option value="{{ amount }}">{{ amount }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit">カートに入れる</button>
+    </form>
+    {% else %}
+        <p>在庫がありません。</p>
+    {% endif %}
 </body>
 </html>

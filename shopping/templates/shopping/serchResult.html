@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>検索結果</title>
+</head>
+<body>
+
+<h1>検索結果</h1>
+
+<form method="get" action="{% url 'shopping:search_result' %}">
+    <div>
+        <label>カテゴリ</label>
+        <select name="category">
+            <option value="">すべて</option>
+
+            {% for category in categories %}
+                <option value="{{ category.category_id }}"
+                    {% if selected_category == category.category_id|stringformat:"s" %}selected{% endif %}
+                >
+                    {{ category.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label>キーワード</label>
+        <input type="text" name="keyword" value="{{ keyword }}" placeholder="商品名を入力">
+    </div>
+
+    <button type="submit">検索</button>
+</form>
+
+<hr>
+
+{% if items %}
+    <table border="1">
+        <thead>
+            <tr>
+                <th>商品名</th>
+                <th>商品の色</th>
+                <th>メーカー名</th>
+                <th>価格</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.color }}</td>
+                    <td>{{ item.manufacturer }}</td>
+                    <td>{{ item.price }}円</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>該当する商品がありません。</p>
+{% endif %}
+
+<a href="{% url 'shopping:main' %}">検索画面に戻る</a>
+
+</body>
+</html>

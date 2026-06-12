@@ -15,7 +15,7 @@ def login_view(request):
         if user is not None and check_password(password, user.password):
             request.session["login_user_id"] = user.user_id
             request.session["login_name"] = user.name
-            return redirect("success")
+            return redirect("shopping:main")
         else:
             error_message = "ユーザーIDまたはパスワードが違います。"
 
@@ -47,7 +47,7 @@ def register_view(request):
                 "name": name,
                 "address": address,
             }
-            return redirect("registerUserConfirm")
+            return redirect("users:registerUserConfirm")
 
     return render(request, "login/register.html", {
         "error_message": error_message
@@ -58,7 +58,7 @@ def register_confirm_view(request):
     register_data = request.session.get("register_data")
 
     if register_data is None:
-        return redirect("register")
+        return redirect("users:register")
 
     if request.method == "POST":
         if LoginUser.objects.filter(user_id=register_data["user_id"]).exists():
@@ -76,7 +76,7 @@ def register_confirm_view(request):
 
         del request.session["register_data"]
 
-        return redirect("login")
+        return redirect("users:login")
 
     return render(request, "login/registerUserConfirm.html", {
         "register_data": register_data
@@ -87,8 +87,12 @@ def success_view(request):
     login_name = request.session.get("login_name")
 
     if login_name is None:
-        return redirect("login")
+        return redirect("users:login")
 
     return render(request, "login/success.html", {
         "login_name": login_name
     })
+
+def logout_view(request):
+    request.session.flush()
+    return redirect("shopping:main")

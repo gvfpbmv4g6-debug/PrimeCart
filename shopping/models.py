@@ -7,7 +7,7 @@ class ShoppingCategory(models.Model):
     name = models.CharField(max_length=256)
 
     def __str__(self):
-        return self.user_id
+        return self.name
     
     class Meta:
         db_table = "shopping_category"
@@ -21,14 +21,14 @@ class ShoppingItem(models.Model):
     color = models.CharField(max_length=16)
     price = models.IntegerField()
     stock = models.IntegerField()
-    recommended = models.BooleanField(max_length=1, default=False)
+    recommended = models.BooleanField(default=False)
     category = models.ForeignKey(
         ShoppingCategory,
         on_delete=models.CASCADE,
     )
 
     def __str__(self):
-        return self.user_id
+        return self.name
     
     class Meta:
         db_table = "shopping_item"
@@ -59,7 +59,7 @@ class ShoppingPurchase(models.Model):
     purchase_id = models.IntegerField(primary_key=True)
     destination = models.CharField(max_length=256)
     booked_date = models.DateTimeField(auto_now_add=True)
-    cancel = models.BooleanField(max_length=1, default=False)
+    cancel = models.BooleanField(default=False)
     user = models.ForeignKey(
         LoginUser,
         on_delete=models.CASCADE,

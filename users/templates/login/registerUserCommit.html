@@ -6,7 +6,7 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>{{ register_data.name }}さんの会員登録が完了しました。</h1>
-    <a href="">商品検索へ</a>
+    <h1>{{ user.name }}さんの会員登録が完了しました。</h1>
+    <a href="{% url 'shopping:main' %}">商品検索へ</a>
 </body>
 </html>

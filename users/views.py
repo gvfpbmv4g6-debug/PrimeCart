@@ -76,22 +76,15 @@ def register_confirm_view(request):
 
         del request.session["register_data"]
 
-        return redirect("users:login")
+        return redirect("users:registerUserCommit")
 
     return render(request, "login/registerUserConfirm.html", {
         "register_data": register_data
     })
 
 
-def success_view(request):
-    login_name = request.session.get("login_name")
-
-    if login_name is None:
-        return redirect("users:login")
-
-    return render(request, "login/success.html", {
-        "login_name": login_name
-    })
+def register_commit_view(request):
+    return render(request, "login/registerUserCommit.html")
 
 def user_info_view(request):
     login_user_id = request.session.get("login_user_id")

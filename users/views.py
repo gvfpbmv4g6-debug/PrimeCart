@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import make_password, check_password
 from .models import LoginUser
+from .forms import RegisterForm
 
 
 def login_view(request):
@@ -25,32 +26,28 @@ def login_view(request):
 
 
 def register_view(request):
-    error_message = ""
-
     if request.method == "POST":
-        user_id = request.POST.get("user_id")
-        password = request.POST.get("password")
-        confirm_password = request.POST.get("confirm_password")
-        name = request.POST.get("name")
-        address = request.POST.get("address")
+        form = RegisterForm(request.POST)
 
-        
-        if password != confirm_password:
-            error_message = "パスワードが一致しません。"
+        if form.is_valid():
+            user_id = form.cleaned_data["user_id"]
+            password = form.cleaned_data["password"]
+            name = form.cleaned_data["name"]
+            address = form.cleaned_data["address"]
 
-        elif LoginUser.objects.filter(user_id=user_id).exists():
-            error_message = "このユーザーIDは既に使われています。"
-        else:
             request.session["register_data"] = {
                 "user_id": user_id,
                 "password": make_password(password),
                 "name": name,
                 "address": address,
             }
+
             return redirect("users:registerUserConfirm")
+    else:
+        form = RegisterForm()
 
     return render(request, "login/register.html", {
-        "error_message": error_message
+        "form": form
     })
 
 

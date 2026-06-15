@@ -119,7 +119,6 @@
             text-decoration: underline;
         }
 
-        /* スマホ対応 */
         @media (max-width: 480px) {
             .login-container {
                 padding: 32px 24px;
@@ -155,6 +154,7 @@
             <button type="submit">ログイン</button>
         </form>
         <a href="{% url 'users:register' %}" class="register-link">ユーザー登録はこちら</a>
+        <a href="{% url 'shopping:main' %}" class="register-link">検索画面へ</a>
     </div>
 </body>
 </html>

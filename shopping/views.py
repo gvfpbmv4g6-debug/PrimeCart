@@ -21,46 +21,50 @@ def search_result(request):
 
     items = ShoppingItem.objects.all()
 
-    # カテゴリ検索
+    selected_category_name = "すべて"
+
     if category_id:
         items = items.filter(category_id=category_id)
 
-    # キーワード検索：商品名で検索
+        selected_category = ShoppingCategory.objects.filter(category_id=category_id).first()
+        if selected_category is not None:
+            selected_category_name = selected_category.name
+
     if keyword:
         items = items.filter(name__icontains=keyword)
 
     categories = ShoppingCategory.objects.all()
 
-    login_user_id = request.session.get("login_user_id")
-    login_name = request.session.get("login_name")
-
     return render(request, "shopping/serchResult.html", {
         "items": items,
         "categories": categories,
         "selected_category": category_id,
+        "selected_category_name": selected_category_name,
         "keyword": keyword,
-        "login_user_id": login_user_id,
-        "login_name": login_name,
+        "login_user_id": request.session.get("login_user_id"),
+        "login_name": request.session.get("login_name"),
     })
 
 def item_detail(request, item_id):
     login_user_id = request.session.get("login_user_id")
     login_name = request.session.get("login_name")
 
-    if login_user_id is None:
-        return redirect("users:login")
-
-    user = LoginUser.objects.filter(user_id=login_user_id).first()
-
-    if user is None:
-        return redirect("users:login")
-
     item = ShoppingItem.objects.filter(item_id=item_id).first()
 
     if item is None:
         return redirect("shopping:main")
 
+    amount_list = range(1, item.stock + 1)
+
     if request.method == "POST":
+        if login_user_id is None:
+            return redirect("users:login")
+
+        user = LoginUser.objects.filter(user_id=login_user_id).first()
+
+        if user is None:
+            return redirect("users:login")
+
         amount = int(request.POST.get("amount"))
 
         cart_item = ShoppingItemsincart.objects.filter(
@@ -79,8 +83,6 @@ def item_detail(request, item_id):
             cart_item.save()
 
         return redirect("shopping:cart")
-
-    amount_list = range(1, item.stock + 1)
 
     return render(request, "shopping/itemDetail.html", {
         "item": item,
@@ -103,11 +105,15 @@ def cart_view(request):
 
     cart_items = ShoppingItemsincart.objects.filter(user=user)
 
+    total_price = 0
+
     for cart_item in cart_items:
         cart_item.subtotal = cart_item.item.price * cart_item.amount
+        total_price += cart_item.subtotal
 
     return render(request, "shopping/cart.html", {
         "cart_items": cart_items,
+        "total_price": total_price,
         "login_user_id": login_user_id,
         "login_name": login_name,
     })

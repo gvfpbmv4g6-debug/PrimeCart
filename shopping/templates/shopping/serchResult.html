@@ -6,7 +6,8 @@
 </head>
 <body>
 
-<h1>検索結果</h1>
+<h1>キーワード{% if keyword %}"{{ keyword }}"{% else %}なし{% endif %}、
+    カテゴリ"{{ selected_category_name }}"の検索結果</h1>
 
 <form method="get" action="{% url 'shopping:search_result' %}">
     <div>

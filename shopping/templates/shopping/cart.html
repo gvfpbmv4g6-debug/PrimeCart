@@ -19,7 +19,7 @@
                 <th>商品名</th>
                 <th>色</th>
                 <th>メーカー</th>
-                <th>価格</th>
+                <th>単価</th>
                 <th>数量</th>
                 <th>小計</th>
             </tr>
@@ -37,12 +37,15 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <h2>合計金額：{{ total_price }}円</h2>
+    
 {% else %}
     <p>カートに商品がありません。</p>
 {% endif %}
 
 <p>
-    <a href="{% url 'shopping:main' %}">メイン画面に戻る</a>
+    <a href="{% url 'shopping:main' %}">検索画面に戻る</a>
 </p>
 
 </body>

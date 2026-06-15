@@ -33,6 +33,10 @@
 
     <br>
 
+    {% if error_message %}
+    <p style="color:red;">{{ error_message }}</p>
+    {% endif %}
+
     {% if item.stock > 0 %}
     <form method="post">
         {% csrf_token %}
@@ -50,6 +54,7 @@
     </form>
     {% else %}
         <p>在庫がありません。</p>
+        <a href="{% url 'shopping:main' %}">検索画面に戻る</a>
     {% endif %}
 </body>
 </html>

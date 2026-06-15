@@ -67,6 +67,18 @@ def item_detail(request, item_id):
 
         amount = int(request.POST.get("amount"))
 
+        if amount <= 0:
+            return redirect("shopping:item_detail", item_id=item.item_id)
+
+        if amount > item.stock:
+            return render(request, "shopping/itemDetail.html", {
+                "item": item,
+                "amount_list": amount_list,
+                "login_user_id": login_user_id,
+                "login_name": login_name,
+                "error_message": "在庫数を超えています。",
+            })
+
         cart_item = ShoppingItemsincart.objects.filter(
             user=user,
             item=item
@@ -81,6 +93,9 @@ def item_detail(request, item_id):
         else:
             cart_item.amount += amount
             cart_item.save()
+
+        item.stock -= amount
+        item.save()
 
         return redirect("shopping:cart")
 
@@ -111,9 +126,90 @@ def cart_view(request):
         cart_item.subtotal = cart_item.item.price * cart_item.amount
         total_price += cart_item.subtotal
 
+        max_amount = cart_item.amount + cart_item.item.stock
+        cart_item.amount_list = range(1, max_amount + 1)
+
     return render(request, "shopping/cart.html", {
         "cart_items": cart_items,
         "total_price": total_price,
         "login_user_id": login_user_id,
         "login_name": login_name,
     })
+
+def cart_update(request, cart_id):
+    login_user_id = request.session.get("login_user_id")
+
+    if login_user_id is None:
+        return redirect("users:login")
+
+    user = LoginUser.objects.filter(user_id=login_user_id).first()
+
+    if user is None:
+        return redirect("users:login")
+
+    cart_item = ShoppingItemsincart.objects.filter(
+        id=cart_id,
+        user=user
+    ).first()
+
+    if cart_item is None:
+        return redirect("shopping:cart")
+
+    if request.method == "POST":
+        new_amount = int(request.POST.get("amount"))
+
+        item = cart_item.item
+        old_amount = cart_item.amount
+
+        if new_amount <= 0:
+            item.stock += old_amount
+            item.save()
+            cart_item.delete()
+            return redirect("shopping:cart")
+
+        diff = new_amount - old_amount
+
+        if diff > 0:
+            if diff > item.stock:
+                return redirect("shopping:cart")
+
+            item.stock -= diff
+            item.save()
+
+        elif diff < 0:
+            item.stock += abs(diff)
+            item.save()
+
+        cart_item.amount = new_amount
+        cart_item.save()
+
+    return redirect("shopping:cart")
+
+def cart_delete(request, cart_id):
+    login_user_id = request.session.get("login_user_id")
+
+    if login_user_id is None:
+        return redirect("users:login")
+
+    user = LoginUser.objects.filter(user_id=login_user_id).first()
+
+    if user is None:
+        return redirect("users:login")
+
+    cart_item = ShoppingItemsincart.objects.filter(
+        id=cart_id,
+        user=user
+    ).first()
+
+    if cart_item is None:
+        return redirect("shopping:cart")
+
+    if request.method == "POST":
+        item = cart_item.item
+
+        item.stock += cart_item.amount
+        item.save()
+
+        cart_item.delete()
+
+    return redirect("shopping:cart")

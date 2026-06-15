@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>カート</title>
+</head>
+<body>
+
+<h1>カート</h1>
+
+{% if login_user_id %}
+    <p>{{ login_name }} さんのカート</p>
+{% endif %}
+
+{% if cart_items %}
+    <table border="1">
+        <thead>
+            <tr>
+                <th>商品名</th>
+                <th>色</th>
+                <th>メーカー</th>
+                <th>価格</th>
+                <th>数量</th>
+                <th>小計</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cart_item in cart_items %}
+                <tr>
+                    <td>{{ cart_item.item.name }}</td>
+                    <td>{{ cart_item.item.color }}</td>
+                    <td>{{ cart_item.item.manufacturer }}</td>
+                    <td>{{ cart_item.item.price }}円</td>
+                    <td>{{ cart_item.amount }}</td>
+                    <td>{{ cart_item.subtotal }}円</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>カートに商品がありません。</p>
+{% endif %}
+
+<p>
+    <a href="{% url 'shopping:main' %}">メイン画面に戻る</a>
+</p>
+
+</body>
+</html>

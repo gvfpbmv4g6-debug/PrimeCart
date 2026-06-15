@@ -1,7 +1,5 @@
 from django.shortcuts import render, redirect
-from django.db.models import Q
-
-from .models import ShoppingCategory, ShoppingItem
+from .models import ShoppingCategory, ShoppingItem, ShoppingItemsincart, LoginUser
 
 
 def main(request):
@@ -49,15 +47,67 @@ def item_detail(request, item_id):
     login_user_id = request.session.get("login_user_id")
     login_name = request.session.get("login_name")
 
+    if login_user_id is None:
+        return redirect("users:login")
+
+    user = LoginUser.objects.filter(user_id=login_user_id).first()
+
+    if user is None:
+        return redirect("users:login")
+
     item = ShoppingItem.objects.filter(item_id=item_id).first()
-    amount_list = range(1, item.stock + 1)
 
     if item is None:
-        return redirect("shopping:search_result")
+        return redirect("shopping:main")
+
+    if request.method == "POST":
+        amount = int(request.POST.get("amount"))
+
+        cart_item = ShoppingItemsincart.objects.filter(
+            user=user,
+            item=item
+        ).first()
+
+        if cart_item is None:
+            ShoppingItemsincart.objects.create(
+                user=user,
+                item=item,
+                amount=amount
+            )
+        else:
+            cart_item.amount += amount
+            cart_item.save()
+
+        return redirect("shopping:cart")
+
+    amount_list = range(1, item.stock + 1)
 
     return render(request, "shopping/itemDetail.html", {
         "item": item,
+        "amount_list": amount_list,
         "login_user_id": login_user_id,
         "login_name": login_name,
-        "amount_list": amount_list,
+    })
+
+def cart_view(request):
+    login_user_id = request.session.get("login_user_id")
+    login_name = request.session.get("login_name")
+
+    if login_user_id is None:
+        return redirect("users:login")
+
+    user = LoginUser.objects.filter(user_id=login_user_id).first()
+
+    if user is None:
+        return redirect("users:login")
+
+    cart_items = ShoppingItemsincart.objects.filter(user=user)
+
+    for cart_item in cart_items:
+        cart_item.subtotal = cart_item.item.price * cart_item.amount
+
+    return render(request, "shopping/cart.html", {
+        "cart_items": cart_items,
+        "login_user_id": login_user_id,
+        "login_name": login_name,
     })

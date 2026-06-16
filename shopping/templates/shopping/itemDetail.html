@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品詳細</title>
+</head>
+<body>
+    <h1>商品の詳細表示</h1>
+
+    <table border="1">
+        <tr>
+            <th>商品名</th>
+            <td>{{ item.name }}</td>
+        </tr>
+        <tr>
+            <th>商品の色</th>
+            <td>{{ item.color }}</td>
+        </tr>
+        <tr>
+            <th>メーカー名</th>
+            <td>{{ item.manufacturer }}</td>
+        </tr>
+        <tr>
+            <th>価格</th>
+            <td>{{ item.price }}円</td>
+        </tr>
+        <tr>
+            <th>在庫数</th>
+            <td>{{ item.stock }}個</td>
+        </tr>
+    </table>
+
+    <br>
+
+    {% if error_message %}
+    <p style="color:red;">{{ error_message }}</p>
+    {% endif %}
+
+    {% if item.stock > 0 %}
+    <form method="post">
+        {% csrf_token %}
+
+        <div>
+            <label for="amount">数量</label>
+            <select name="amount" id="amount">
+                {% for amount in amount_list %}
+                    <option value="{{ amount }}">{{ amount }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit">カートに入れる</button>
+    </form>
+    {% else %}
+        <p>在庫がありません。</p>
+        <a href="{% url 'shopping:main' %}">検索画面に戻る</a>
+    {% endif %}
+</body>
+</html>

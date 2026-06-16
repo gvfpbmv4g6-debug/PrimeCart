@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>カート</title>
+</head>
+<body>
+
+<h1>カート</h1>
+
+{% if login_user_id %}
+    <p>{{ login_name }} さんのカート</p>
+{% endif %}
+
+{% if cart_items %}
+    <table border="1">
+        <thead>
+            <tr>
+                <th>商品名</th>
+                <th>色</th>
+                <th>メーカー</th>
+                <th>価格</th>
+                <th>数量</th>
+                <th>小計</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cart_item in cart_items %}
+                <tr>
+                    <td>{{ cart_item.item.name }}</td>
+                    <td>{{ cart_item.item.color }}</td>
+                    <td>{{ cart_item.item.manufacturer }}</td>
+                    <td>{{ cart_item.item.price }}円</td>
+
+                    <td>
+                        <form method="post" action="{% url 'shopping:cart_update' cart_item.id %}">
+                            {% csrf_token %}
+                            <select name="amount">
+                                {% for amount in cart_item.amount_list %}
+                                    <option value="{{ amount }}"
+                                        {% if amount == cart_item.amount %}selected{% endif %}
+                                    >
+                                        {{ amount }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit">修正</button>
+                        </form>
+                    </td>
+
+                    <td>{{ cart_item.subtotal }}円</td>
+
+                    <td>
+                        <form method="post" action="{% url 'shopping:cart_delete' cart_item.id %}">
+                            {% csrf_token %}
+                            <button type="submit">削除</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>合計金額：{{ total_price }}円</h2>
+
+{% else %}
+    <p>カートに商品がありません。</p>
+{% endif %}
+
+<p>
+    <a href="{% url 'shopping:main' %}">メイン画面に戻る</a>
+</p>
+
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ログイン画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", "Hiragino Sans", "Yu Gothic UI", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 32px;
+            letter-spacing: 0.5px;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c53030;
+            border-left: 4px solid #c53030;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        form p {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #4a5568;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            background: #f7fafc;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 8px;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        .register-link {
+            display: block;
+            text-align: center;
+            margin-top: 24px;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .register-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 32px 24px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>ログイン画面</h1>
+
+        {% if error_message %}
+            <p class="error-message">{{error_message}}</p>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <p>
+                <label>会員ID:</label>
+                <input type="text" name="user_id" required>
+            </p>
+            
+            <p>
+                <label>パスワード:</label>
+                <input type="password" name="password" required>
+            </p>
+
+            <button type="submit">ログイン</button>
+        </form>
+        <a href="{% url 'users:register' %}" class="register-link">ユーザー登録はこちら</a>
+        <a href="{% url 'shopping:main' %}" class="register-link">検索画面へ</a>
+    </div>
+</body>
+</html>

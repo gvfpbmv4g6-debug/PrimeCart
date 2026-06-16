@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>購入履歴</title>
+</head>
+<body>
+
+<h1>購入履歴</h1>
+
+{% if login_user_id %}
+    <p>{{ login_name }} さんの購入履歴</p>
+{% endif %}
+
+{% if purchase_histories %}
+    {% for history in purchase_histories %}
+        <div style="border: 1px solid #999; padding: 16px; margin-bottom: 24px;">
+            <h2>購入番号：{{ history.purchase.purchase_id }}</h2>
+
+            <p>購入日時：{{ history.purchase.booked_date }}</p>
+            <p>配送先住所：{{ history.purchase.destination }}</p>
+            <p>支払方法：{{ history.payment_method_label }}</p>
+
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>商品名</th>
+                        <th>色</th>
+                        <th>メーカー</th>
+                        <th>価格</th>
+                        <th>数量</th>
+                        <th>小計</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detail in history.details %}
+                        <tr>
+                            <td>{{ detail.item.name }}</td>
+                            <td>{{ detail.item.color }}</td>
+                            <td>{{ detail.item.manufacturer }}</td>
+                            <td>{{ detail.item.price }}円</td>
+                            <td>{{ detail.amount }}</td>
+                            <td>{{ detail.subtotal }}円</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h3>合計金額：{{ history.total_price }}円</h3>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>購入履歴はありません。</p>
+{% endif %}
+
+<p>
+    <a href="{% url 'shopping:main' %}">検索画面に戻る</a>
+</p>
+
+</body>
+</html>

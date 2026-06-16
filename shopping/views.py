@@ -308,3 +308,52 @@ def purchase_commit_view(request):
         "purchase_id": purchase_id,
     })
 
+def purchase_history_view(request):
+    login_user_id = request.session.get("login_user_id")
+    login_name = request.session.get("login_name")
+
+    if login_user_id is None:
+        return redirect("users:login")
+
+    user = LoginUser.objects.filter(user_id=login_user_id).first()
+
+    if user is None:
+        return redirect("users:login")
+
+    purchases = ShoppingPurchase.objects.filter(
+        user=user,
+        cancel=False
+    ).order_by("-booked_date")
+
+    purchase_histories = []
+
+    for purchase in purchases:
+        details = ShoppingPurchaseDtail.objects.filter(purchase=purchase)
+
+        total_price = 0
+
+        for detail in details:
+            detail.subtotal = detail.item.price * detail.amount
+            total_price += detail.subtotal
+
+        payment_method = getattr(purchase, "payment_method", "")
+
+        if payment_method == "credit":
+            payment_method_label = "クレジット"
+        elif payment_method == "cash_on_delivery":
+            payment_method_label = "代金引換"
+        else:
+            payment_method_label = "未設定"
+
+        purchase_histories.append({
+            "purchase": purchase,
+            "details": details,
+            "total_price": total_price,
+            "payment_method_label": payment_method_label,
+        })
+
+    return render(request, "shopping/purchaseHistory.html", {
+        "purchase_histories": purchase_histories,
+        "login_user_id": login_user_id,
+        "login_name": login_name,
+    })

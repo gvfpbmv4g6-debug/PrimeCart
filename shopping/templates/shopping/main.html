@@ -81,6 +81,17 @@
             border-color: #1d4ed8;
         }
 
+        .btn-primary2 {
+            background: #eb2525;
+            border-color: #eb2525;
+            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-primary2:hover {
+            background: #d81d58;
+            border-color: #d81d5e;
+        }
+
         .menu-card {
             background: #ffffff;
             border-radius: 22px;
@@ -115,16 +126,6 @@
             font-weight: 700;
         }
 
-        @media (max-width: 576px) {
-            .hero-section {
-                padding: 36px 22px;
-                border-radius: 22px;
-            }
-
-            .search-card {
-                padding: 22px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -132,13 +133,9 @@
 
 <nav class="navbar navbar-expand-lg bg-white sticky-top">
     <div class="container">
-        <a class="navbar-brand text-dark" href="#">
+        <a class="navbar-brand text-dark">
             PrimeCart
         </a>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
 
         <div class="collapse navbar-collapse mt-3 mt-lg-0" id="mainNavbar">
             <div class="ms-auto d-flex flex-column flex-lg-row gap-2 align-items-lg-center">
@@ -156,11 +153,11 @@
                         会員情報
                     </a>
 
-                    <a href="{% url 'users:updateUser' %}" class="btn btn-outline-secondary">
+                    <a href="{% url 'users:updateUser' %}" class="btn btn-outline-dark">
                         会員情報の変更
                     </a>
 
-                    <a href="{% url 'users:logout' %}" class="btn btn-dark">
+                    <a href="{% url 'users:logout' %}" class="btn btn-outline-danger">
                         ログアウト
                     </a>
                 {% else %}
@@ -245,11 +242,8 @@
     <section>
         <div class="d-flex justify-content-between align-items-end mb-4">
             <div>
-                <p class="text-primary fw-bold mb-2">
+                <h2 class="text-primary fw-bold mb-1">
                     Menu
-                </p>
-                <h2 class="fw-bold mb-0">
-                    便利なメニュー
                 </h2>
             </div>
         </div>

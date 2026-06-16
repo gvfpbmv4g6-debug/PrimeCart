@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>購入完了</title>
+</head>
+<body>
+
+<h1>購入が完了しました。</h1>
+
+{% if purchase_id %}
+    <p>購入番号：{{ purchase_id }}</p>
+{% endif %}
+
+<p>
+    <a href="{% url 'shopping:main' %}">main画面に戻る</a>
+</p>
+
+</body>
+</html>

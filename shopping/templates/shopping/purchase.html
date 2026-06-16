@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>購入画面</title>
+</head>
+<body>
+
+<h1>購入画面</h1>
+
+{% if error_message %}
+    <p style="color:red;">{{ error_message }}</p>
+{% endif %}
+
+<h2>購入商品</h2>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>商品名</th>
+            <th>色</th>
+            <th>メーカー</th>
+            <th>価格</th>
+            <th>数量</th>
+            <th>小計</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cart_item in cart_items %}
+            <tr>
+                <td>{{ cart_item.item.name }}</td>
+                <td>{{ cart_item.item.color }}</td>
+                <td>{{ cart_item.item.manufacturer }}</td>
+                <td>{{ cart_item.item.price }}円</td>
+                <td>{{ cart_item.amount }}</td>
+                <td>{{ cart_item.subtotal }}円</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>合計金額：{{ total_price }}円</h2>
+
+<hr>
+
+<form method="post" action="{% url 'shopping:purchase' %}">
+    {% csrf_token %}
+
+    <div>
+        <label for="destination">住所</label>
+        <input 
+            type="text" 
+            id="destination" 
+            name="destination" 
+            value="{{ user.address }}" 
+            required
+        >
+    </div>
+
+    <br>
+
+    <div>
+        <label for="payment_method">支払方法</label>
+        <select name="payment_method" id="payment_method">
+            <option value="credit">クレジット</option>
+            <option value="cash_on_delivery">代金引換</option>
+        </select>
+    </div>
+
+    <br>
+
+    <button type="submit">購入</button>
+</form>
+
+<p>
+    <a href="{% url 'shopping:cart' %}">カートに戻る</a>
+</p>
+
+</body>
+</html>

@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
-from .models import ShoppingCategory, ShoppingItem, ShoppingItemsincart, LoginUser
+from django.db.models import Max
+from .models import ShoppingCategory, ShoppingItem, ShoppingItemsincart, ShoppingPurchase, ShoppingPurchaseDtail
+from users.models import LoginUser
 
 
 def main(request):
@@ -213,3 +215,96 @@ def cart_delete(request, cart_id):
         cart_item.delete()
 
     return redirect("shopping:cart")
+
+def get_next_purchase_id():
+    max_id = ShoppingPurchase.objects.aggregate(Max("purchase_id"))["purchase_id__max"]
+
+    if max_id is None:
+        return 1
+
+    return max_id + 1
+
+
+def get_next_purchase_detail_id():
+    max_id = ShoppingPurchaseDtail.objects.aggregate(Max("purchase_detail_id"))["purchase_detail_id__max"]
+
+    if max_id is None:
+        return 1
+
+    return max_id + 1
+
+def purchase_view(request):
+    login_user_id = request.session.get("login_user_id")
+    login_name = request.session.get("login_name")
+
+    if login_user_id is None:
+        return redirect("users:login")
+
+    user = LoginUser.objects.filter(user_id=login_user_id).first()
+
+    if user is None:
+        return redirect("users:login")
+
+    cart_items = ShoppingItemsincart.objects.filter(user=user)
+
+    if not cart_items.exists():
+        return redirect("shopping:cart")
+
+    total_price = 0
+
+    for cart_item in cart_items:
+        cart_item.subtotal = cart_item.item.price * cart_item.amount
+        total_price += cart_item.subtotal
+
+    if request.method == "POST":
+        destination = request.POST.get("destination")
+        payment_method = request.POST.get("payment_method")
+
+        if not destination:
+            return render(request, "shopping/purchase.html", {
+                "cart_items": cart_items,
+                "total_price": total_price,
+                "user": user,
+                "login_user_id": login_user_id,
+                "login_name": login_name,
+                "error_message": "住所を入力してください。",
+            })
+
+        purchase = ShoppingPurchase.objects.create(
+            purchase_id=get_next_purchase_id(),
+            destination=destination,
+            payment_method=payment_method,
+            user=user,
+        )
+
+        for cart_item in cart_items:
+            ShoppingPurchaseDtail.objects.create(
+                purchase_detail_id=get_next_purchase_detail_id(),
+                amount=cart_item.amount,
+                item=cart_item.item,
+                purchase=purchase,
+            )
+
+        cart_items.delete()
+
+        request.session["purchase_id"] = purchase.purchase_id
+
+        return redirect("shopping:purchaseCommit")
+
+    return render(request, "shopping/purchase.html", {
+        "cart_items": cart_items,
+        "total_price": total_price,
+        "user": user,
+        "login_user_id": login_user_id,
+        "login_name": login_name,
+    })
+
+def purchase_commit_view(request):
+    purchase_id = request.session.get("purchase_id")
+
+    request.session.pop("purchase_id", None)
+
+    return render(request, "shopping/purchaseCommit.html", {
+        "purchase_id": purchase_id,
+    })
+

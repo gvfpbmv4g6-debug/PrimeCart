@@ -68,6 +68,10 @@
     <p>カートに商品がありません。</p>
 {% endif %}
 
+<form method="get" action="{% url 'shopping:purchase' %}">
+    <button type="submit">購入へ進む</button>
+</form>
+
 <p>
     <a href="{% url 'shopping:main' %}">メイン画面に戻る</a>
 </p>

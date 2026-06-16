@@ -59,6 +59,7 @@ class ShoppingPurchase(models.Model):
     purchase_id = models.IntegerField(primary_key=True)
     destination = models.CharField(max_length=256)
     booked_date = models.DateTimeField(auto_now_add=True)
+    payment_method = models.CharField(max_length=32, default="credit")
     cancel = models.BooleanField(default=False)
     user = models.ForeignKey(
         LoginUser,
